@@ -15,7 +15,7 @@ scripts:
     - $update_example_deps
     - $update_generator_deps
   gencode: 
-    - cd example_usage && pub run build_runner build
+    - cd example_usage && fvm flutter pub run build_runner build
     - cd ..
   gencode_watch: 
     - cd example_usage && pub run build_runner watch

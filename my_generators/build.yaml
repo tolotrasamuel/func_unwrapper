@@ -20,3 +20,10 @@ builders:
     build_extensions: {".dart": [".serialize.part"]}
     build_to: cache
     applies_builders: ["source_gen|combining_builder"]
+  functionUnwrap:
+    import: 'package:my_generators/my_generators.dart'
+    builder_factories: ['functionUnwrapBuild']
+    auto_apply: dependents
+    build_extensions: {".source.dart": [".unwrapped.dart"]}
+    build_to: source
+    applies_builders: ["source_gen"]

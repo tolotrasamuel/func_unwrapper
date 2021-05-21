@@ -17,20 +17,6 @@ extension $Order on Order {
 }
 
 // **************************************************************************
-// InfoGenerator
-// **************************************************************************
-
-// myStr - top level variable - String myStr
-// myInt - top level variable - int myInt
-// myDouble - top level variable - double myDouble
-// myBool - top level variable - bool myBool
-// myList - top level variable - List<int> myList
-// myMap - top level variable - Map<String, String> myMap
-// mySet - top level variable - Set<String> mySet
-// mySymbol - top level variable - Symbol mySymbol
-// myFunc - top level variable - void myFunc
-
-// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
