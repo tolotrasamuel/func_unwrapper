@@ -6,16 +6,16 @@ class Cat {
 }
 
 class Dog {
-  final Cat cat;
+  final Cat? cat;
 
   Dog(this.cat);
 
   String sayHi() {
-    return this.cat.sound();
+    return this.cat!.sound();
   }
 
   int jump() {
-    return this.cat.walk();
+    return this.cat!.walk();
   }
 }
 

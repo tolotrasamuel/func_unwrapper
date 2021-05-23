@@ -1,7 +1,7 @@
-import 'package:build/build.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:source_gen/source_gen.dart';
+import 'package:build/build.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:source_gen/source_gen.dart';
 
 class SerializeGenerator extends GeneratorForAnnotation<JsonSerializable> {
   @override
@@ -9,7 +9,7 @@ class SerializeGenerator extends GeneratorForAnnotation<JsonSerializable> {
       Element element, ConstantReader annotation, BuildStep buildStep) {
     var buffer = StringBuffer();
 
-    buffer.writeln('// ${annotation.read('nullable').boolValue}');
+    // buffer.writeln('// ${annotation.read('nullable').boolValue}');
     // extension $OrderSerializer on Order {
     //   static Order fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
     //   Map<String, dynamic> toJson() => _$OrderToJson(this);

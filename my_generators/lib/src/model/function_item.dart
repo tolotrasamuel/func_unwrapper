@@ -11,11 +11,11 @@ class FunctionItem {
   bool unwrapped;
 
   FunctionItem({
-    @required this.file,
-    @required this.methodName,
-    @required this.astNode,
-    @required this.unwrapped,
-    @required this.selector,
+    required this.file,
+    required this.methodName,
+    required this.astNode,
+    required this.unwrapped,
+    required this.selector,
   });
 
   toString() {

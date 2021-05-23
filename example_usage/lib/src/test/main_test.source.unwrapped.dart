@@ -13,21 +13,21 @@ import 'package:mockito/mockito.dart';
 // d
 @UnWrap()
 void expectCatCalled() {
-  verify(cat.sound());
+  verify(cat!.sound());
 }
 
 @UnWrap()
 void testDogWoof() {
   print("Hi");
-  when(cat.sound()).thenReturn("Woof");
+  when(cat!.sound()).thenReturn("Woof");
   dog = Dog(cat);
   final sound = dog.sayHi();
   expect(sound, "Woof");
-  verify(cat.sound());
+  verify(cat!.sound());
 }
 
 void expectCatWalked() {
-  verify(cat.walk());
+  verify(cat!.walk());
 }
 
 void main() {
@@ -38,21 +38,21 @@ void main() {
 
     test('Dog woof', () {
       print("Hi");
-      when(cat.sound()).thenReturn("Woof");
+      when(cat!.sound()).thenReturn("Woof");
       dog = Dog(cat);
       final sound = dog.sayHi();
       expect(sound, "Woof");
-      verify(cat.sound());
+      verify(cat!.sound());
     });
 
     test('Dog woof then jump', () {
       print("Hi");
-      when(cat.sound()).thenReturn("Woof");
+      when(cat!.sound()).thenReturn("Woof");
       dog = Dog(cat);
       final sound = dog.sayHi();
       expect(sound, "Woof");
-      verify(cat.sound());
-      when(cat.walk()).thenReturn(2);
+      verify(cat!.sound());
+      when(cat!.walk()).thenReturn(2);
       final steps = dog.jump();
       expect(steps, 2);
       expectCatWalked();

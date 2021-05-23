@@ -15,11 +15,11 @@ part 'example.g.dart';
 //   print('Hello world!!!');
 // };
 
-@JsonSerializable(nullable: false)
+@JsonSerializable()
 class Order {
-  final int id;
-  final String name;
-  final String price;
+  final int? id;
+  final String? name;
+  final String? price;
 
   const Order(
     this.id,

@@ -10,7 +10,7 @@ import 'package:my_generators/src/model/selector.dart';
 import 'package:source_gen/source_gen.dart';
 
 class LibraryResolver {
-  FileContent fileContent;
+  FileContent? fileContent;
   final String path;
 
   LibraryResolver(this.path);
@@ -19,10 +19,11 @@ class LibraryResolver {
 class FunctionUnwrap extends Generator {
   final List<FunctionItem> items = [];
   // FileContent fileContent;
-  List<LibraryResolver> libResolvers = [];
-  BuildStep buildStep;
+  // List<LibraryResolver> libResolvers = [];
+  late BuildStep buildStep;
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
+    items.clear();
     this.buildStep = buildStep;
     final inputId = buildStep.inputId;
     final ans = await resolveLib(library.element, inputId);
@@ -41,7 +42,7 @@ class FunctionUnwrap extends Generator {
     // libResolvers.add(LibraryResolver(element.identifier));
 
     String content = await buildStep.readAsString(inputId);
-    FileContent fileContent = FileContent(content, 0);
+    FileContent fileContent = FileContent(content, 0, element.identifier);
     LibraryReader library = LibraryReader(element);
 
     for (var element in library.allElements) {
@@ -82,7 +83,7 @@ class FunctionUnwrap extends Generator {
             existing.first.unwrapped = true;
           }
           // parent because we need to take into account the trailing semicolumn;
-          final nodeTarget = node.parent;
+          final nodeTarget = node.parent!;
 
           final copySelector = existing.first.selector;
           final pasteSelector = Selector(nodeTarget.offset, nodeTarget.end);
@@ -154,7 +155,7 @@ class FunctionUnwrap extends Generator {
     return block;
   }
 
-  void updateAllSelectors({Selector pasteSelector, int changedLengthTo}) {
+  void updateAllSelectors({required Selector pasteSelector, required int changedLengthTo}) {
     final newSelector =
         Selector(pasteSelector.from, pasteSelector.from + changedLengthTo);
     final deltaChange = changedLengthTo - pasteSelector.length;

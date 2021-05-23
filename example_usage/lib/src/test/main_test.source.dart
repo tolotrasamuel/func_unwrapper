@@ -7,7 +7,7 @@ import 'package:mockito/mockito.dart';
 // d
 @UnWrap()
 void expectCatCalled() {
-  verify(cat.sound());
+  verify(cat!.sound());
 }
 
 @UnWrap()
@@ -20,7 +20,7 @@ void testDogWoof() {
 }
 
 void expectCatWalked() {
-  verify(cat.walk());
+  verify(cat!.walk());
 }
 
 void main() {

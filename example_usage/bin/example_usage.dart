@@ -8,7 +8,7 @@ void main(List<String> arguments) {
   final order2Copy = Order(2, 'Second order', '13.23');
 
   print(order2 == order2Copy);
-
+  //
   print(order2Copy.toJson());
   print($OrderSerializer(order2Copy).toJson());
 

@@ -22,9 +22,9 @@ extension $Order on Order {
 
 Order _$OrderFromJson(Map<String, dynamic> json) {
   return Order(
-    json['id'] as int,
-    json['name'] as String,
-    json['price'] as String,
+    json['id'] as int?,
+    json['name'] as String?,
+    json['price'] as String?,
   );
 }
 
@@ -38,7 +38,6 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
 // SerializeGenerator
 // **************************************************************************
 
-// false
 extension $OrderSerializer on Order {
   static Order fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
   Map<String, dynamic> toJson() => _$OrderToJson(this);
