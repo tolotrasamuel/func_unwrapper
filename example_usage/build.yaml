@@ -16,4 +16,5 @@ targets:
       my_generators|functionUnwrap:
         enabled: True
         generate_for:
-          - lib/src/test/*
+          - lib/src/test/**/*.source.dart
+          - lib/src/test/*.source.dart

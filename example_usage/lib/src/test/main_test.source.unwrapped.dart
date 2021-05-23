@@ -10,6 +10,7 @@ import 'package:example_usage/src/unwrap.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
+// d
 @UnWrap()
 void expectCatCalled() {
   verify(cat.sound());
@@ -17,7 +18,8 @@ void expectCatCalled() {
 
 @UnWrap()
 void testDogWoof() {
-  setupCatSoundStub();
+  print("Hi");
+  when(cat.sound()).thenReturn("Woof");
   dog = Dog(cat);
   final sound = dog.sayHi();
   expect(sound, "Woof");
@@ -35,7 +37,8 @@ void main() {
     });
 
     test('Dog woof', () {
-      setupCatSoundStub();
+      print("Hi");
+      when(cat.sound()).thenReturn("Woof");
       dog = Dog(cat);
       final sound = dog.sayHi();
       expect(sound, "Woof");
@@ -43,12 +46,13 @@ void main() {
     });
 
     test('Dog woof then jump', () {
-      setupCatSoundStub();
+      print("Hi");
+      when(cat.sound()).thenReturn("Woof");
       dog = Dog(cat);
       final sound = dog.sayHi();
       expect(sound, "Woof");
       verify(cat.sound());
-      setupCatWalkstub();
+      when(cat.walk()).thenReturn(2);
       final steps = dog.jump();
       expect(steps, 2);
       expectCatWalked();
