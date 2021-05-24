@@ -14,15 +14,27 @@ void testParam(String foo, String? bar, [String baz = "234"]) {
 }
 
 @UnWrap()
+void testParamAllOptional([String baz = "234"]) {
+  print(baz);
+}
+
+@UnWrap()
 void testParamNamed(String foo, String? bar,
     {required int a, int? b, int c = 23}) {
   print(foo + (bar ?? "bar") + '${a + (b ?? 69) + c}');
+}
+
+@UnWrap()
+void testNamedParamAllOptional({String? baz}) {
+  print(baz);
 }
 
 void testParams() {
   testParam("foo", null);
   testParam("foo", null, "baz");
   testParamNamed("foo", "bar", a: 3, c: 23);
+  testParamAllOptional();
+  testNamedParamAllOptional();
 }
 
 @UnWrap()

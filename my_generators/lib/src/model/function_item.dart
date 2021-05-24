@@ -52,12 +52,14 @@ class FunctionItem {
     stringBuffer.write("}");
 
     if (argumentList == null) {
-      print(
-          'Bad State. Argument list is null alghough function declaration seems to have params');
+      // This case handles a scenario where parameters are all optionals and no argument were sent
+      // print('Argument list is null alghough function'
+      //     ' declaration seems to have params');
       // we just return this instead of throwing for debugging purposes (toString is used in debug console by default)
-      return functionBody;
+      stringBuffer.write("()");
+    } else {
+      stringBuffer.write(argumentList.toSource());
     }
-    stringBuffer.write(argumentList.toSource());
     stringBuffer.write(";");
     stringBuffer.writeln();
     return stringBuffer.toString();

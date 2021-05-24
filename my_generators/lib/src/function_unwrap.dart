@@ -55,7 +55,8 @@ class FunctionUnwrap extends Generator {
     LibraryReader library = LibraryReader(element);
 
     for (var element in library.allElements) {
-      print("${element.runtimeType} runtimeType ${element.toString()}}");
+      print("All topLevel functions in ${fileContent.fileName} "
+          "${element.runtimeType}  ${element.toString()}}");
       var astNode = await buildStep.resolver.astNodeFor(element, resolve: true);
       if (astNode != null) {
         buildFunctions(astNode, fileContent);
@@ -65,7 +66,7 @@ class FunctionUnwrap extends Generator {
     var i = 0;
     for (var element in library.allElements) {
       var astNode = await buildStep.resolver.astNodeFor(element, resolve: true);
-      print("${element.runtimeType} ${i++} runtimeType ${element.toString()}}");
+      // print("${element.runtimeType} ${i++} runtimeType ${element.toString()}}");
       if (astNode != null) {
         resolveFunction(astNode, fileContent);
       }

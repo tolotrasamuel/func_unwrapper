@@ -14,9 +14,19 @@ void testParam(String foo, String? bar, [String baz = "234"]) {
 }
 
 @UnWrap()
+void testParamAllOptional([String baz = "234"]) {
+  print(baz);
+}
+
+@UnWrap()
 void testParamNamed(String foo, String? bar,
     {required int a, int? b, int c = 23}) {
   print(foo + (bar ?? "bar") + '${a + (b ?? 69) + c}');
+}
+
+@UnWrap()
+void testNamedParamAllOptional({String? baz}) {
+  print(baz);
 }
 
 void testParams() {
@@ -34,6 +44,16 @@ void testParams() {
   (String foo, String? bar, {required int a, int? b, int c = 23}) {
     print(foo + (bar ?? "bar") + '${a + (b ?? 69) + c}');
   }("foo", "bar", a: 3, c: 23);
+
+  // Test Param All Options
+  ([String baz = "234"]) {
+    print(baz);
+  }();
+
+  // Test Param Named All Options
+  ({String? baz}) {
+    print(baz);
+  }();
 }
 
 @UnWrap()
