@@ -17,5 +17,5 @@ Builder serializeGeneratorBuilder(BuilderOptions options) =>
 
 Builder functionUnwrapBuild(BuilderOptions options) => LibraryBuilder(
       FunctionUnwrap(),
-      generatedExtension: '.unwrapped.dart',
+      generatedExtension: '.unwrapped_test.dart',
     );

@@ -9,9 +9,16 @@ class FileContent {
 
   void replaceAt({required Selector pasteAt, required String replacement}) {
     this.content = this.content.replaceRange(
-        pasteAt.from + this.offset, pasteAt.to + this.offset, replacement);
+          pasteAt.from,
+          pasteAt.to,
+          replacement,
+        );
     var offsetChange = replacement.length - pasteAt.length;
     this.offset += offsetChange;
     this.content;
+  }
+
+  String resolveContent(Selector selector) {
+    return content.substring(selector.from, selector.to);
   }
 }

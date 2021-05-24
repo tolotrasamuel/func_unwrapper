@@ -1,0 +1,23 @@
+name: example_usage
+description: A sample command-line application.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  path: ^1.8.0
+  my_generators:
+    path: ../../my_generators
+  json_serializable: ^4.1.2
+
+dev_dependencies:
+  pedantic: ^1.11.0
+  test:
+  build_runner: ^2.0.3
+  mockito: ^5.0.8
+  flutter_test:
+    sdk: flutter

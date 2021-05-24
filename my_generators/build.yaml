@@ -24,6 +24,6 @@ builders:
     import: 'package:my_generators/my_generators.dart'
     builder_factories: ['functionUnwrapBuild']
     auto_apply: dependents
-    build_extensions: {".source.dart": [".unwrapped.dart"]}
+    build_extensions: {".source.dart": [".unwrapped_test.dart"]}
     build_to: source
     applies_builders: ["source_gen"]

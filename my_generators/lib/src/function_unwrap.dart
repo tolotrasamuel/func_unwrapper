@@ -9,6 +9,15 @@ import 'package:my_generators/src/model/function_item.dart';
 import 'package:my_generators/src/model/selector.dart';
 import 'package:source_gen/source_gen.dart';
 
+extension MyIterable<T> on Iterable<T> {
+  T? get firstOrNull => isEmpty ? null : first;
+
+  T? firstWhereOrNull(bool Function(T element) test) {
+    final list = where(test);
+    return list.isEmpty ? null : list.first;
+  }
+}
+
 class LibraryResolver {
   FileContent? fileContent;
   final String path;
@@ -67,38 +76,50 @@ class FunctionUnwrap extends Generator {
 
   void resolveFunction(AstNode nodeChild, FileContent fileContent) {
     recurse(nodeChild, (AstNode node) {
-      try {
-        var methodInvocation = node as MethodInvocation;
-        final funcName = methodInvocation.childEntities
-            .whereType<SimpleIdentifier>()
-            .first
-            .name;
-        if (funcName == "testDogWoof") {
-          print("here");
-        }
-        final existing = this.getFunctionItemByMethodName(funcName);
-        if (existing.isNotEmpty) {
-          if (existing.first.unwrapped != true) {
-            resolveFunction(existing.first.astNode, fileContent);
-            existing.first.unwrapped = true;
-          }
-          // parent because we need to take into account the trailing semicolumn;
-          final nodeTarget = node.parent!;
-
-          final copySelector = existing.first.selector;
-          final pasteSelector = Selector(nodeTarget.offset, nodeTarget.end);
-          fileContent.replaceAt(
-            pasteAt: pasteSelector,
-            replacement: existing.first.toString(),
-          );
-          this.updateAllSelectors(
-              pasteSelector: pasteSelector,
-              changedLengthTo: copySelector.length);
-          print(items.length);
-        }
-      } catch (e) {
-        e.hashCode;
+      if (node is! MethodInvocation) {
+        return;
       }
+
+      var methodInvocation = node as MethodInvocation;
+      final funcName = methodInvocation.childEntities
+          .whereType<SimpleIdentifier>()
+          .firstOrNull;
+      if (funcName == null) return;
+      if (funcName == "testDogWoof") {
+        print("here");
+      }
+      final existing = this.getFunctionItemByMethodName(funcName.name);
+      if (existing.isEmpty) {
+        return;
+      }
+      final invokedMethod = existing.first;
+      if (invokedMethod.unwrapped != true) {
+        resolveFunction(invokedMethod.block, fileContent);
+        invokedMethod.unwrapped = true;
+      }
+      if (invokedMethod.methodName == "expectCatCalled") {
+        print("break here");
+      }
+
+      // parent because we need to take into account the trailing semicolumn;
+      final nodeTarget = methodInvocation.parent!;
+
+      // final copySelector = existing.first.selector;
+      final argumentList = getArgFromMethodInvocation(methodInvocation);
+      final replacement = invokedMethod.toStringCalledWith(argumentList);
+      final pasteSelector$Zero = Selector(nodeTarget.offset, nodeTarget.end);
+      final pasteSelector = pasteSelector$Zero..addOffset(fileContent.offset);
+
+      fileContent.replaceAt(
+        pasteAt: pasteSelector,
+        replacement: replacement,
+      );
+      updateAllSelectors(
+        pasteSelector: pasteSelector,
+        changedLengthTo: replacement.length,
+        fileContent: fileContent,
+      );
+      print(items.length);
     });
   }
 
@@ -122,54 +143,94 @@ class FunctionUnwrap extends Generator {
   }
 
   void buildFunctions(AstNode astNode, FileContent fileContent) {
-    if (astNode == null) {
+    if (astNode == null || astNode is! FunctionDeclaration) {
       return;
     }
-    try {
-      var functionDeclaration = astNode as FunctionDeclaration;
-      var metadata = functionDeclaration.metadata.whereType<Annotation>().first;
-      if ((metadata.childEntities.toList()[1] as SimpleIdentifier).name ==
-          "UnWrap") {
-        final block = getFuncBodyFromFuncDeclaration(functionDeclaration);
-        items.add(FunctionItem(
-            file: fileContent,
-            methodName: getFuncNameFromFuncDeclaration(functionDeclaration),
-            astNode: block,
-            unwrapped: false,
-            selector: FunctionItem.getBlockSelector(block)));
-      }
-    } catch (e) {}
+    var funcDeclaration = astNode as FunctionDeclaration;
+    var metadata = funcDeclaration.metadata.whereType<Annotation>().firstOrNull;
+    if (metadata == null) return;
+    final toUnwrap = metadata.childEntities
+        .whereType<SimpleIdentifier>()
+        .where((element) => element.name == "UnWrap")
+        .isNotEmpty;
+    if (!toUnwrap) return;
+    final block = getFuncBodyFromFuncDeclaration(funcDeclaration);
+    final paramList = getFuncParamFromFuncDeclaration(funcDeclaration);
+    if (paramList == null || block == null) {
+      return;
+    }
+    items.add(FunctionItem(
+      file: fileContent,
+      methodName: getFuncNameFromFuncDeclaration(funcDeclaration),
+      paramList: paramList,
+      block: block,
+      unwrapped: false,
+      selector: FunctionItem.getBlockSelector(block),
+    ));
   }
 
   String getFuncNameFromFuncDeclaration(FunctionDeclaration astNode) {
     return astNode.childEntities.whereType<SimpleIdentifier>().first.name;
   }
 
-  Block getFuncBodyFromFuncDeclaration(FunctionDeclaration astNode) {
+  Block? getFuncBodyFromFuncDeclaration(FunctionDeclaration astNode) {
     final funcExpression =
-        astNode.childEntities.whereType<FunctionExpression>().first;
-    final blockFuncBody =
-        funcExpression.childEntities.whereType<BlockFunctionBody>().first;
-    final block = blockFuncBody.childEntities.whereType<Block>().first;
+        astNode.childEntities.whereType<FunctionExpression>().firstOrNull;
+    final blockFuncBody = funcExpression?.childEntities
+        .whereType<BlockFunctionBody>()
+        .firstOrNull;
+    final block = blockFuncBody?.childEntities.whereType<Block>().firstOrNull;
     // final blockExpression = block.childEntities.whereType<ExpressionStatement>().first;
     return block;
   }
 
-  void updateAllSelectors({required Selector pasteSelector, required int changedLengthTo}) {
-    final newSelector =
-        Selector(pasteSelector.from, pasteSelector.from + changedLengthTo);
+  FormalParameterList? getFuncParamFromFuncDeclaration(
+      FunctionDeclaration astNode) {
+    final funcExpression =
+        astNode.childEntities.whereType<FunctionExpression>().firstOrNull;
+    final paramList = funcExpression?.childEntities
+        .whereType<FormalParameterList>()
+        .firstOrNull;
+    return paramList;
+  }
+
+  ArgumentList? getArgFromMethodInvocation(MethodInvocation astNode) {
+    final shortList = astNode.childEntities.whereType<ArgumentList>();
+    if (shortList.isEmpty) return null;
+    final argList = shortList.first;
+    return argList;
+  }
+
+  void updateAllSelectors({
+    required Selector pasteSelector,
+    required int changedLengthTo,
+    required FileContent fileContent,
+  }) {
+    final newSelector = Selector(
+      pasteSelector.from,
+      pasteSelector.from + changedLengthTo,
+    );
     final deltaChange = changedLengthTo - pasteSelector.length;
-    for (var myFunc in this.items) {
+
+    for (var myFunc in items) {
+      if (myFunc.methodName == "expectCatCalled") {
+        print("break here");
+      }
+      // if my function is before paste selector
       if (myFunc.selector.to < pasteSelector.from) {
         // do nothing
-      } else if (myFunc.selector.from > newSelector.to) {
+      }
+      // if my function is after paste selector
+      else if (myFunc.selector.from > pasteSelector.to) {
         myFunc.selector.addOffset(deltaChange);
-      } else if (myFunc.selector.from <= pasteSelector.from &&
+      }
+      // if my function is updated inside
+      else if (myFunc.selector.from <= pasteSelector.from &&
           myFunc.selector.to >= pasteSelector.to) {
         myFunc.selector.to += deltaChange;
       }
       var funcStr = myFunc.toString();
-      print(funcStr);
+      var content = (funcStr);
     }
   }
 
