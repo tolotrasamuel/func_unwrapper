@@ -18,4 +18,4 @@ targets:
         generate_for:
           - test/**/*.source.dart
           - test/*.source.dart
-#          - test/input.source.dart
+#          - test/multi_files/input.source.dart

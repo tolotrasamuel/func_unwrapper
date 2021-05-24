@@ -159,9 +159,16 @@ class FunctionUnwrap extends Generator {
     if (paramList == null || block == null) {
       return;
     }
+    var methodName = getFuncNameFromFuncDeclaration(funcDeclaration);
+    final existing = getFunctionItemByMethodName(methodName);
+    if (existing.isNotEmpty) {
+      throw ("Warning, method $methodName already declared at both: "
+          "${existing.first.file.fileName} and ${fileContent.fileName}. \n");
+      return;
+    }
     items.add(FunctionItem(
       file: fileContent,
-      methodName: getFuncNameFromFuncDeclaration(funcDeclaration),
+      methodName: methodName,
       paramList: paramList,
       block: block,
       unwrapped: false,
@@ -213,6 +220,10 @@ class FunctionUnwrap extends Generator {
     final deltaChange = changedLengthTo - pasteSelector.length;
 
     for (var myFunc in items) {
+      // File of the function hasn't changed. we just read the function
+      if (myFunc.file.fileName != fileContent.fileName) {
+        continue;
+      }
       if (myFunc.methodName == "expectCatCalled") {
         print("break here");
       }

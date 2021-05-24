@@ -26,7 +26,7 @@ void expectCatWalked() {
 }
 
 void main() {
-  group('Dog Cat Play', () {
+  group('Multi files -  Dog Cat Play', () {
     setUp(() {
       cat = MockCat();
     });

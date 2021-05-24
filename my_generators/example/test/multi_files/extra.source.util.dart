@@ -15,8 +15,3 @@ void setupCatSoundStub() {
 void setupCatWalkstub() {
   when(cat!.walk()).thenReturn(2);
 }
-
-@UnWrap()
-void expectCatCalled() {
-  verify(cat!.sound());
-}

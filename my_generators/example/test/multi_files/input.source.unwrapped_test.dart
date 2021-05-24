@@ -1,3 +1,9 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+// **************************************************************************
+// Generator: FunctionUnwrap
+// **************************************************************************
+
 import 'package:example_usage/model.dart';
 import 'package:example_usage/model.mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,7 +36,7 @@ void expectCatWalked() {
 }
 
 void main() {
-  group('Multi files - Dog Cat Play', () {
+  group('Multi files -  Dog Cat Play', () {
     setUp(() {
       cat = MockCat();
     });
