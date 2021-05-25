@@ -6,14 +6,14 @@ import 'package:my_generators/annotations.dart';
 
 import 'extra.source.util.dart';
 
-// d
+// dd
 @UnWrap()
 void expectCatCalled() {
   verify(cat!.sound());
 }
 
 @UnWrap()
-void testDogWoof() {
+void testDogWaaf() {
   setupCatSoundStub();
   dog = Dog(cat);
   final sound = dog.sayHi();
@@ -26,17 +26,18 @@ void expectCatWalked() {
 }
 
 void main() {
-  group('Multi files -  Dog Cat Play', () {
+  bar();
+  group('Multi files - Dog Cat Play', () {
     setUp(() {
       cat = MockCat();
     });
 
     test('Dog woof', () {
-      testDogWoof();
+      testDogWaaf();
     });
 
     test('Dog woof then jump', () {
-      testDogWoof();
+      testDogWaaf();
       setupCatWalkstub();
       final steps = dog.jump();
       expect(steps, 2);

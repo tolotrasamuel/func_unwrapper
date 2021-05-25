@@ -8,15 +8,21 @@ import 'package:my_generators/annotations.dart';
 import 'package:my_generators/src/model/file_content.dart';
 import 'package:my_generators/src/model/function_item.dart';
 import 'package:my_generators/src/model/selector.dart';
+import 'package:path/path.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'utils/extensions.dart';
 
 class LibraryResolver {
-  FileContent? fileContent;
-  final String path;
+  final FileContent fileContent;
+  final List<String> imports;
+  final String content;
 
-  LibraryResolver(this.path);
+  LibraryResolver({
+    required this.fileContent,
+    required this.imports,
+    required this.content,
+  });
 }
 
 class FunctionUnwrap extends Generator {
@@ -32,22 +38,35 @@ class FunctionUnwrap extends Generator {
     this.buildStep = buildStep;
     final inputId = buildStep.inputId;
     final ans = await resolveLib(library.element, inputId);
-    return ans;
+    final imports = ans.imports.toSet().toList().map((e) {
+      var newPath = e;
+      if (e.contains("asset:")) {
+        final currentPath = (inputId.uri.path);
+        final package = e.replaceFirst("asset:", "");
+        newPath = relative(package, from: currentPath).replaceFirst('../', '');
+      }
+      return "import '$newPath';";
+    });
+    return "${imports.join("\n")}\n${ans.content}";
   }
 
-  Future<String> resolveLib(LibraryElement element, AssetId inputId) async {
+  Future<FileContent> resolveLib(
+      LibraryElement element, AssetId inputId) async {
     final externalLib = element.importedLibraries
         .where((element) => element.identifier.endsWith(".source.util.dart"));
+    final imports = element.importedLibraries.map((e) => e.identifier).toList();
     if (externalLib.isNotEmpty) {
       for (var libElment in externalLib) {
         final assetId = await buildStep.resolver.assetIdForElement(libElment);
-        await resolveLib(libElment, assetId);
+        final fileContent = await resolveLib(libElment, assetId);
+        imports.addAll(fileContent.imports);
       }
     }
     // libResolvers.add(LibraryResolver(element.identifier));
 
     String content = await buildStep.readAsString(inputId);
-    FileContent fileContent = FileContent(content, 0, element.identifier);
+    FileContent fileContent =
+        FileContent(content, 0, element.identifier, imports);
     LibraryReader library = LibraryReader(element);
 
     final annotations = library.annotatedWith(typeChecker).toList();
@@ -71,7 +90,7 @@ class FunctionUnwrap extends Generator {
       }
     }
 
-    return fileContent.content;
+    return fileContent;
   }
 
   void resolveFunction(AstNode nodeChild, FileContent fileContent) {
@@ -85,7 +104,7 @@ class FunctionUnwrap extends Generator {
           .whereType<SimpleIdentifier>()
           .firstOrNull;
       if (funcName == null) return;
-      if (funcName == "testDogWoof") {
+      if (funcName == "barFromParent") {
         print("here");
       }
       final existing = this.getFunctionItemByMethodName(funcName.name);
@@ -97,7 +116,7 @@ class FunctionUnwrap extends Generator {
         resolveFunction(invokedMethod.block, fileContent);
         invokedMethod.unwrapped = true;
       }
-      if (invokedMethod.methodName == "expectCatCalled") {
+      if (invokedMethod.methodName == "barFromParent") {
         print("break here");
       }
 
@@ -224,12 +243,12 @@ class FunctionUnwrap extends Generator {
     final deltaChange = changedLengthTo - pasteSelector.length;
 
     for (var myFunc in items) {
+      if (myFunc.methodName == "testDogWaaf") {
+        print("break here");
+      }
       // File of the function hasn't changed. we just read the function
       if (myFunc.file.fileName != fileContent.fileName) {
         continue;
-      }
-      if (myFunc.methodName == "expectCatCalled") {
-        print("break here");
       }
       // if my function is before paste selector
       if (myFunc.selector.to < pasteSelector.from) {
@@ -241,11 +260,14 @@ class FunctionUnwrap extends Generator {
       }
       // if my function is updated inside
       else if (myFunc.selector.from <= pasteSelector.from &&
-          myFunc.selector.to >= pasteSelector.to) {
+          myFunc.selector.to >= pasteSelector.from) {
         myFunc.selector.to += deltaChange;
       }
       var funcStr = myFunc.toString();
       var content = (funcStr);
+      if (myFunc.methodName == "testDogWaaf") {
+        print("break here");
+      }
     }
   }
 

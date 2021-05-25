@@ -1,11 +1,12 @@
 import 'package:my_generators/src/model/selector.dart';
 
 class FileContent {
+  final List<String> imports;
   final String fileName;
   String content;
   int offset;
 
-  FileContent(this.content, this.offset, this.fileName);
+  FileContent(this.content, this.offset, this.fileName, this.imports);
 
   void replaceAt({required Selector pasteAt, required String replacement}) {
     this.content = this.content.replaceRange(

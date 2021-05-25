@@ -4,6 +4,12 @@
 // Generator: FunctionUnwrap
 // **************************************************************************
 
+import 'package:my_generators/annotations.dart';
+import 'package:test/test.dart';
+import 'package:example_usage/model.dart';
+import 'dart:core';
+import 'package:mockito/mockito.dart';
+import 'package:example_usage/model.mocks.dart';
 import 'package:example_usage/model.dart';
 import 'package:example_usage/model.mocks.dart';
 import 'package:mockito/mockito.dart';
@@ -109,7 +115,8 @@ void main() {
         dog = Dog(cat);
         final sound = dog.sayHi();
         expect(sound, woof);
-        // Expect Cat Cal
+        // Expect Cat Called expectCatCalled()
+        verify(cat!.sound());
       }("Woof");
       // Test Dog Woof testDogWoof()
       (String woof) {
@@ -121,7 +128,8 @@ void main() {
         dog = Dog(cat);
         final sound = dog.sayHi();
         expect(sound, woof);
-        // Expect Cat Cal
+        // Expect Cat Called expectCatCalled()
+        verify(cat!.sound());
       }("Waaf");
     });
 
@@ -136,7 +144,8 @@ void main() {
         dog = Dog(cat);
         final sound = dog.sayHi();
         expect(sound, woof);
-        // Expect Cat Cal
+        // Expect Cat Called expectCatCalled()
+        verify(cat!.sound());
       }("Woof");
       // Setup Cat Walkstub setupCatWalkstub()
       when(cat!.walk()).thenReturn(2);
