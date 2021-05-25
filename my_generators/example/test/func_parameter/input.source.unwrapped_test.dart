@@ -40,22 +40,18 @@ void testParams() {
   (String foo, String? bar, [String baz = "234"]) {
     print(foo + (bar ?? "bar") + baz);
   }("foo", null);
-
   // Test Param testParam()
   (String foo, String? bar, [String baz = "234"]) {
     print(foo + (bar ?? "bar") + baz);
   }("foo", null, "baz");
-
   // Test Param Named testParamNamed()
   (String foo, String? bar, {required int a, int? b, int c = 23}) {
     print(foo + (bar ?? "bar") + '${a + (b ?? 69) + c}');
   }("foo", "bar", a: 3, c: 23);
-
   // Test Param All Optional testParamAllOptional()
   ([String baz = "234"]) {
     print(baz);
   }();
-
   // Test Named Param All Optional testNamedParamAllOptional()
   ({String? baz}) {
     print(baz);
@@ -85,7 +81,6 @@ void testDogWoof(String woof) {
     print("Hi");
     when(cat!.sound()).thenReturn(woof);
   }(woof: woof);
-
   dog = Dog(cat);
   final sound = dog.sayHi();
   expect(sound, woof);
@@ -111,14 +106,11 @@ void main() {
           print("Hi");
           when(cat!.sound()).thenReturn(woof);
         }(woof: woof);
-
         dog = Dog(cat);
         final sound = dog.sayHi();
         expect(sound, woof);
-        // Expect Cat Called expectCatCalled()
-        verify(cat!.sound());
+        // Expect Cat Cal
       }("Woof");
-
       // Test Dog Woof testDogWoof()
       (String woof) {
         // Setup Cat Sound Stub setupCatSoundStub()
@@ -126,12 +118,10 @@ void main() {
           print("Hi");
           when(cat!.sound()).thenReturn(woof);
         }(woof: woof);
-
         dog = Dog(cat);
         final sound = dog.sayHi();
         expect(sound, woof);
-        // Expect Cat Called expectCatCalled()
-        verify(cat!.sound());
+        // Expect Cat Cal
       }("Waaf");
     });
 
@@ -143,14 +133,11 @@ void main() {
           print("Hi");
           when(cat!.sound()).thenReturn(woof);
         }(woof: woof);
-
         dog = Dog(cat);
         final sound = dog.sayHi();
         expect(sound, woof);
-        // Expect Cat Called expectCatCalled()
-        verify(cat!.sound());
+        // Expect Cat Cal
       }("Woof");
-
       // Setup Cat Walkstub setupCatWalkstub()
       when(cat!.walk()).thenReturn(2);
 

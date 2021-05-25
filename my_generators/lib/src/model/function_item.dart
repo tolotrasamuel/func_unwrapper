@@ -1,16 +1,7 @@
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:my_generators/src/model/file_content.dart';
 import 'package:my_generators/src/model/selector.dart';
-
-String camelToSentence(String text) {
-  return text.replaceAllMapped(RegExp(r'^([a-z])|[A-Z]'), (Match m) {
-    var m1 = m[1];
-    if (m1 == null) {
-      return " ${m[0]}";
-    }
-    return m1.toUpperCase();
-  });
-}
+import 'package:my_generators/src/utils/extensions.dart';
 
 class FunctionItem {
   final FileContent file;
@@ -29,6 +20,20 @@ class FunctionItem {
     required this.selector,
   });
 
+  BlockFunctionBody? getBlockFuncBodyFromBlock(Block block) {
+    return block.parent?.parent?.childEntities
+        .whereType<BlockFunctionBody>()
+        .firstOrNull;
+  }
+
+  // 2 because when no parameter, we still have begin and OPEN_PAREN and CLOSE_PAREN (BeginToken and EndToken)
+  bool get hasNoParam => this.paramList.childEntities.length <= 2;
+  bool isAsync() {
+    final blockFunc = getBlockFuncBodyFromBlock(block);
+    if (blockFunc == null) return false;
+    return blockFunc.isAsynchronous;
+  }
+
   toString([ArgumentList? argumentList = null]) {
     return toStringCalledWith(argumentList);
   }
@@ -37,16 +42,24 @@ class FunctionItem {
     StringBuffer stringBuffer = StringBuffer();
 
     final functionBody = file.resolveContent(selector);
-    // 2 because when no parameter, we still have begin and OPEN_PAREN and CLOSE_PAREN (BeginToken and EndToken)
-
     stringBuffer
         .writeln(" // " + camelToSentence(methodName) + ' $methodName()');
-    if (this.paramList.childEntities.length <= 2) {
+    final _isAwaitedAsync = isAwaitedAsync(argumentList);
+
+    if ((hasNoParam && !isAsync()) ||
+        hasNoParam && isAsync() && _isAwaitedAsync) {
       stringBuffer.writeln(functionBody);
       stringBuffer.writeln();
       return stringBuffer.toString();
     }
+
+    if (isAsync()) {
+      stringBuffer.write(" await ");
+    }
     stringBuffer.write(paramList.toSource());
+    if (isAsync()) {
+      stringBuffer.write(" async ");
+    }
     stringBuffer.writeln("{");
     stringBuffer.writeln(functionBody);
     stringBuffer.write("}");
@@ -70,5 +83,10 @@ class FunctionItem {
         .where((e) => (e is AstNode));
     if (statements.isEmpty) return Selector(0, 0);
     return Selector(statements.first.offset, statements.last.end);
+  }
+
+  bool isAwaitedAsync(ArgumentList? argumentList) {
+    return (argumentList?.parent?.parent is AwaitExpression);
+    // grandpa because pa  of ArgumentList is MethodInvocation
   }
 }

@@ -10,14 +10,7 @@ import 'package:my_generators/src/model/function_item.dart';
 import 'package:my_generators/src/model/selector.dart';
 import 'package:source_gen/source_gen.dart';
 
-extension MyIterable<T> on Iterable<T> {
-  T? get firstOrNull => isEmpty ? null : first;
-
-  T? firstWhereOrNull(bool Function(T element) test) {
-    final list = where(test);
-    return list.isEmpty ? null : list.first;
-  }
-}
+import 'utils/extensions.dart';
 
 class LibraryResolver {
   FileContent? fileContent;
@@ -114,7 +107,10 @@ class FunctionUnwrap extends Generator {
       // final copySelector = existing.first.selector;
       final argumentList = getArgFromMethodInvocation(methodInvocation);
       final replacement = invokedMethod.toStringCalledWith(argumentList);
-      final pasteSelector$Zero = Selector(nodeTarget.offset, nodeTarget.end);
+
+      // +1 to remove the trailing left by the selector (not sure but unit test passed)
+      final pasteSelector$Zero =
+          Selector(nodeTarget.offset, nodeTarget.end + 1);
       final pasteSelector = pasteSelector$Zero..addOffset(fileContent.offset);
 
       fileContent.replaceAt(
@@ -154,6 +150,7 @@ class FunctionUnwrap extends Generator {
       return;
     }
     var funcDeclaration = astNode as FunctionDeclaration;
+
     var metadata = funcDeclaration.metadata.whereType<Annotation>().firstOrNull;
     if (metadata == null) return;
     // final toUnwrap = metadata.childEntities

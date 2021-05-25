@@ -12,11 +12,11 @@ targets:
       my_generators|functionUnwrap:
         enabled: True
         generate_for:
-          - test/**/*
-          - test/*
+          - test/**/*.source.dart
+          - test/*.source.dart
+#          - test/unwrap_async/input.source.dart
       my_generators|infoGeneratorBuilder:
         enabled: True
         generate_for:
-          - test/**/*.source.dart
-          - test/*.source.dart
-#          - test/multi_files/input.source.dart
+          - test/**/*
+          - test/*

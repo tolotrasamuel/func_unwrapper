@@ -1,9 +1,3 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-// **************************************************************************
-// Generator: FunctionUnwrap
-// **************************************************************************
-
 import 'package:example_usage/model.dart';
 import 'package:example_usage/model.mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,13 +8,14 @@ import 'package:my_generators/annotations.dart';
 MockCat? cat;
 late Dog dog;
 @UnWrap()
-void setupCatSoundStub() {
-  print("Hi");
+Future<void> setupCatSoundStub(String hi) async {
+  await Future.delayed(Duration.zero);
   when(cat!.sound()).thenReturn("Woof");
 }
 
 @UnWrap()
-void setupCatWalkstub() {
+Future<void> setupCatWalkstub() async {
+  await Future.delayed(Duration.zero);
   when(cat!.walk()).thenReturn(2);
 }
 
@@ -30,9 +25,11 @@ void expectCatCalled() {
 }
 
 @UnWrap()
-void testDogWoof() {
-  print("Hi");
-  when(cat!.sound()).thenReturn("Woof");
+Future<void> testDogWoof() async {
+  await (String hi) async {
+    await Future.delayed(Duration.zero);
+    when(cat!.sound()).thenReturn("Woof");
+  }("hi");
   dog = Dog(cat);
   final sound = dog.sayHi();
   expect(sound, "Woof");
@@ -49,28 +46,36 @@ void main() {
       cat = MockCat();
     });
 
-    test('Dog woof', () {
-      // testDogWoof();
-      print("Hi");
-      when(cat!.sound()).thenReturn("Woof");
+    test('Dog woof', () async {
+      await (String hi) async {
+        await Future.delayed(Duration.zero);
+        when(cat!.sound()).thenReturn("Woof");
+      }("hi");
+
       dog = Dog(cat);
       final sound = dog.sayHi();
       expect(sound, "Woof");
-      // expectCatCalled();
       verify(cat!.sound());
     });
 
-    test('Dog woof then jump', () {
-      // testDogWoof();
-      print("Hi");
-      when(cat!.sound()).thenReturn("Woof");
+    test('Dog woof then jump', () async {
+      await (String hi) async {
+        await Future.delayed(Duration.zero);
+        when(cat!.sound()).thenReturn("Woof");
+      }("hi");
+
       dog = Dog(cat);
       final sound = dog.sayHi();
       expect(sound, "Woof");
-      // expectCatCalled();
       verify(cat!.sound());
       // setupCatWalkstub();
+      await Future.delayed(Duration.zero);
       when(cat!.walk()).thenReturn(2);
+      // setupCatWalkstub();
+      await () async {
+        await Future.delayed(Duration.zero);
+        when(cat!.walk()).thenReturn(2);
+      }();
       final steps = dog.jump();
       expect(steps, 2);
       expectCatWalked();

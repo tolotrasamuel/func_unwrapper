@@ -62,8 +62,7 @@ void main() {
       dog = Dog(cat);
       final sound = dog.sayHi();
       expect(sound, "Woof");
-      // Expect Cat Called expectCatCalled()
-      verify(cat!.sound());
+      // Expect Cat Cal
     });
 
     test('Dog woof then jump', () {
@@ -75,8 +74,7 @@ void main() {
       dog = Dog(cat);
       final sound = dog.sayHi();
       expect(sound, "Woof");
-      // Expect Cat Called expectCatCalled()
-      verify(cat!.sound());
+      // Expect Cat Cal
 
       // Setup Cat Walkstub setupCatWalkstub()
       when(cat!.walk()).thenReturn(2);
