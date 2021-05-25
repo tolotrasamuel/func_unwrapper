@@ -1,10 +1,6 @@
 targets:
   $default:
     builders:
-      my_generators|infoGeneratorBuilder:
-        enabled: True
-        generate_for:
-          - lib/src/*
       my_generators|classExtrasGeneratorBuilder:
         enabled: True
         generate_for:
@@ -14,6 +10,11 @@ targets:
         generate_for:
           - lib/src/*
       my_generators|functionUnwrap:
+        enabled: True
+        generate_for:
+          - test/**/*
+          - test/*
+      my_generators|infoGeneratorBuilder:
         enabled: True
         generate_for:
           - test/**/*.source.dart

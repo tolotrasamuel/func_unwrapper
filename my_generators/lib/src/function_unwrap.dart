@@ -4,6 +4,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:build/src/builder/build_step.dart';
+import 'package:my_generators/annotations.dart';
 import 'package:my_generators/src/model/file_content.dart';
 import 'package:my_generators/src/model/function_item.dart';
 import 'package:my_generators/src/model/selector.dart';
@@ -26,6 +27,8 @@ class LibraryResolver {
 }
 
 class FunctionUnwrap extends Generator {
+  TypeChecker get typeChecker => TypeChecker.fromRuntime(UnWrap);
+
   final List<FunctionItem> items = [];
   // FileContent fileContent;
   // List<LibraryResolver> libResolvers = [];
@@ -54,10 +57,13 @@ class FunctionUnwrap extends Generator {
     FileContent fileContent = FileContent(content, 0, element.identifier);
     LibraryReader library = LibraryReader(element);
 
-    for (var element in library.allElements) {
+    final annotations = library.annotatedWith(typeChecker).toList();
+
+    for (var element in annotations) {
       print("All topLevel functions in ${fileContent.fileName} "
           "${element.runtimeType}  ${element.toString()}}");
-      var astNode = await buildStep.resolver.astNodeFor(element, resolve: true);
+      var astNode =
+          await buildStep.resolver.astNodeFor(element.element, resolve: true);
       if (astNode != null) {
         buildFunctions(astNode, fileContent);
       }
@@ -150,11 +156,11 @@ class FunctionUnwrap extends Generator {
     var funcDeclaration = astNode as FunctionDeclaration;
     var metadata = funcDeclaration.metadata.whereType<Annotation>().firstOrNull;
     if (metadata == null) return;
-    final toUnwrap = metadata.childEntities
-        .whereType<SimpleIdentifier>()
-        .where((element) => element.name == "UnWrap")
-        .isNotEmpty;
-    if (!toUnwrap) return;
+    // final toUnwrap = metadata.childEntities
+    //     .whereType<SimpleIdentifier>()
+    //     .where((element) => element.name == "UnWrap")
+    //     .isNotEmpty;
+    // if (!toUnwrap) return;
     final block = getFuncBodyFromFuncDeclaration(funcDeclaration);
     final paramList = getFuncParamFromFuncDeclaration(funcDeclaration);
     if (paramList == null || block == null) {

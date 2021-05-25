@@ -6,9 +6,6 @@ import 'src/class_extras_generator.dart';
 import 'src/info_generator.dart';
 import 'src/serialize_generator.dart';
 
-Builder infoGeneratorBuilder(BuilderOptions options) =>
-    SharedPartBuilder([InfoGenerator()], 'info');
-
 Builder classExtrasGeneratorBuilder(BuilderOptions options) =>
     SharedPartBuilder([ClassExtrasGenerator()], 'fields');
 
@@ -18,4 +15,9 @@ Builder serializeGeneratorBuilder(BuilderOptions options) =>
 Builder functionUnwrapBuild(BuilderOptions options) => LibraryBuilder(
       FunctionUnwrap(),
       generatedExtension: '.unwrapped_test.dart',
+    );
+
+Builder infoGeneratorBuilder(BuilderOptions options) => LibraryBuilder(
+      InfoGenerator(),
+      generatedExtension: '.info.dart',
     );

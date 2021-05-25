@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:my_generators/annotations.dart';
 
-// ssss
+// sss
 MockCat? cat;
 late Dog dog;
 @UnWrap()
@@ -31,14 +31,11 @@ void expectCatCalled() {
 
 @UnWrap()
 void testDogWoof() {
-  // Setup Cat Sound Stub setupCatSoundStub()
   print("Hi");
   when(cat!.sound()).thenReturn("Woof");
-
   dog = Dog(cat);
   final sound = dog.sayHi();
   expect(sound, "Woof");
-  // Expect Cat Called expectCatCalled()
   verify(cat!.sound());
 }
 
@@ -46,7 +43,6 @@ void expectCatWalked() {
   verify(cat!.walk());
 }
 
-@GenerateFileInfo()
 void main() {
   group('Dog Cat Play', () {
     setUp(() {
@@ -54,33 +50,27 @@ void main() {
     });
 
     test('Dog woof', () {
-      // Test Dog Woof testDogWoof()
-      // Setup Cat Sound Stub setupCatSoundStub()
+      // testDogWoof();
       print("Hi");
       when(cat!.sound()).thenReturn("Woof");
-
       dog = Dog(cat);
       final sound = dog.sayHi();
       expect(sound, "Woof");
-      // Expect Cat Called expectCatCalled()
+      // expectCatCalled();
       verify(cat!.sound());
     });
 
     test('Dog woof then jump', () {
-      // Test Dog Woof testDogWoof()
-      // Setup Cat Sound Stub setupCatSoundStub()
+      // testDogWoof();
       print("Hi");
       when(cat!.sound()).thenReturn("Woof");
-
       dog = Dog(cat);
       final sound = dog.sayHi();
       expect(sound, "Woof");
-      // Expect Cat Called expectCatCalled()
+      // expectCatCalled();
       verify(cat!.sound());
-
-      // Setup Cat Walkstub setupCatWalkstub()
+      // setupCatWalkstub();
       when(cat!.walk()).thenReturn(2);
-
       final steps = dog.jump();
       expect(steps, 2);
       expectCatWalked();

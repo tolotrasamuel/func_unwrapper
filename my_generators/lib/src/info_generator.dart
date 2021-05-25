@@ -1,22 +1,20 @@
 import 'dart:async';
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:my_generators/src/model/generate_file_info.dart';
 import 'package:source_gen/source_gen.dart';
 
 class InfoGenerator extends Generator {
+  TypeChecker get typeChecker => TypeChecker.fromRuntime(GenerateFileInfo);
+
   @override
-  FutureOr<String> generate(LibraryReader library, BuildStep buildStep) {
+  FutureOr<String?> generate(LibraryReader library, BuildStep buildStep) async {
+    final annotations = library.annotatedWith(typeChecker);
+    if (annotations.isEmpty) return null;
+
     var buffer = StringBuffer();
 
-    // library.allElements.forEach((element) {
-    //   buffer.writeln(
-    //       '// ${element.displayName} - ${element.source.fullName} - ${element.declaration}');
-    // });
-    library.allElements.whereType<TopLevelVariableElement>().forEach((element) {
-      buffer.writeln(
-          '// ${element.name} - ${element.kind.displayName} - ${element.declaration}');
-    });
+    buffer.writeln('var \$currentPath = "${buildStep.inputId.path}";');
 
     return buffer.toString();
   }

@@ -36,6 +36,7 @@ void expectCatWalked() {
   verify(cat!.walk());
 }
 
+@GenerateFileInfo()
 void main() {
   group('Dog Cat Play', () {
     setUp(() {

@@ -10,20 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:my_generators/annotations.dart';
 
-// ssss
-MockCat? cat;
-late Dog dog;
-@UnWrap()
-void setupCatSoundStub() {
-  print("Hi");
-  when(cat!.sound()).thenReturn("Woof");
-}
+import 'extra.source.util.dart';
 
-@UnWrap()
-void setupCatWalkstub() {
-  when(cat!.walk()).thenReturn(2);
-}
-
+// d
 @UnWrap()
 void expectCatCalled() {
   verify(cat!.sound());
@@ -46,9 +35,8 @@ void expectCatWalked() {
   verify(cat!.walk());
 }
 
-@GenerateFileInfo()
 void main() {
-  group('Dog Cat Play', () {
+  group('Multi files - Dog Cat Play', () {
     setUp(() {
       cat = MockCat();
     });
