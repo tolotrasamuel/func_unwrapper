@@ -37,6 +37,7 @@ class FunctionUnwrap extends Generator {
     items.clear();
     this.buildStep = buildStep;
     final inputId = buildStep.inputId;
+    print("Unwrapping new file. Function Cache cleared. ${inputId.uri.path}");
     final ans = await resolveLib(library.element, inputId);
     final imports = ans.imports.toSet().toList().map((e) {
       var newPath = e;
@@ -52,6 +53,8 @@ class FunctionUnwrap extends Generator {
 
   Future<FileContent> resolveLib(
       LibraryElement element, AssetId inputId) async {
+    print("Resolving  lib. ${inputId.uri.path}");
+
     final externalLib = element.importedLibraries
         .where((element) => element.identifier.endsWith(".source.util.dart"));
     final imports = element.importedLibraries.map((e) => e.identifier).toList();
@@ -72,14 +75,15 @@ class FunctionUnwrap extends Generator {
     final annotations = library.annotatedWith(typeChecker).toList();
 
     for (var element in annotations) {
-      print("All topLevel functions in ${fileContent.fileName} "
-          "${element.runtimeType}  ${element.toString()}}");
+      // print("All topLevel functions in ${fileContent.fileName} "
+      //     "${element.runtimeType}  ${element.toString()}}");
       var astNode =
           await buildStep.resolver.astNodeFor(element.element, resolve: true);
       if (astNode != null) {
         buildFunctions(astNode, fileContent);
       }
     }
+    // print("Resolving  lib: ${inputId.uri.path} ");
 
     var i = 0;
     for (var element in library.allElements) {
@@ -125,23 +129,38 @@ class FunctionUnwrap extends Generator {
 
       // final copySelector = existing.first.selector;
       final argumentList = getArgFromMethodInvocation(methodInvocation);
-      final replacement = invokedMethod.toStringCalledWith(argumentList);
+      String replacement = "";
+      try {
+        // this may fail due to range error caused by using build_runner watch and utils has changed
+        replacement = invokedMethod.toStringCalledWith(argumentList);
+      } catch (e, trace) {
+        print("Possible range error $e. Please relaunch. $trace");
+      }
 
       // +1 to remove the trailing left by the selector (not sure but unit test passed)
       final pasteSelector$Zero =
           Selector(nodeTarget.offset, nodeTarget.end + 1);
       final pasteSelector = pasteSelector$Zero..addOffset(fileContent.offset);
 
-      fileContent.replaceAt(
-        pasteAt: pasteSelector,
-        replacement: replacement,
-      );
+      try {
+        // this may fail due to range error caused by using build_runner watch and utils has changed
+        fileContent.replaceAt(
+          pasteAt: pasteSelector,
+          replacement: replacement,
+        );
+      } catch (e, trace) {
+        print("Possible range error $e. Please relaunch. $trace");
+        replacement = "";
+      }
       updateAllSelectors(
         pasteSelector: pasteSelector,
         changedLengthTo: replacement.length,
         fileContent: fileContent,
       );
-      print(items.length);
+
+      if (invokedMethod.methodName == "barFromParent") {
+        print(items.length);
+      }
     });
   }
 
@@ -263,6 +282,7 @@ class FunctionUnwrap extends Generator {
           myFunc.selector.to >= pasteSelector.from) {
         myFunc.selector.to += deltaChange;
       }
+
       var funcStr = myFunc.toString();
       var content = (funcStr);
       if (myFunc.methodName == "testDogWaaf") {

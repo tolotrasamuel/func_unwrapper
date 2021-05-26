@@ -35,7 +35,11 @@ class FunctionItem {
   }
 
   toString([ArgumentList? argumentList = null]) {
-    return toStringCalledWith(argumentList);
+    try {
+      return toStringCalledWith(argumentList);
+    } catch (e) {
+      return "RANGE ERROR";
+    }
   }
 
   toStringCalledWith([ArgumentList? argumentList = null]) {
