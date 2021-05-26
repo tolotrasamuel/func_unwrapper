@@ -4,7 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:my_generators/annotations.dart';
 import 'package:test/test.dart';
 
-// ssss
+// sss
 MockCat? cat;
 late Dog dog;
 

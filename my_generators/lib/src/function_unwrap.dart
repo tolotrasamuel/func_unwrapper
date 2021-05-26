@@ -33,12 +33,25 @@ class FunctionUnwrap extends Generator {
   // List<LibraryResolver> libResolvers = [];
   late BuildStep buildStep;
   bool _completed = true;
+  bool? isCompleted(BuildStep buildStep) {
+    try {
+      buildStep.resolver;
+    } catch (e) {
+      if (e is BuildStepCompletedException) {
+        return true;
+      }
+      return null;
+    }
+  }
+
   @override
   FutureOr<String?> generate(LibraryReader library, BuildStep buildStep) async {
     items.clear();
     if (!_completed) {
       print(
           "Heyyy! attempt to reassign the buildStep while it is not completed");
+      print("And this new build step is ${isCompleted(buildStep)} "
+          "while the current build step is ${isCompleted(this.buildStep)}");
       return null;
     }
     _completed = false;
@@ -47,10 +60,10 @@ class FunctionUnwrap extends Generator {
     print("Unwrapping new file. Function Cache cleared. ${inputId.uri.path}");
     final fileContent = await resolveLib(library.element, inputId);
     if (fileContent == null) {
+      print("Early exist. Possibly because of a BuildStepCompletedException");
       _completed = true;
       return null;
     }
-    ;
     final imports = fileContent.imports.toSet().toList().map((e) {
       var newPath = e;
       if (e.contains("asset:")) {
@@ -81,7 +94,7 @@ class FunctionUnwrap extends Generator {
   /// Same comment as [resolver]
   Future<String?> readAsString(AssetId inputId) async {
     try {
-      await buildStep.readAsString(inputId);
+      return await buildStep.readAsString(inputId);
     } catch (e, trace) {
       print('Possible BuildStepCompletedException $e');
       print(trace);
