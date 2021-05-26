@@ -14,48 +14,30 @@ import 'package:source_gen/source_gen.dart';
 import 'utils/extensions.dart';
 
 class LibraryResolver {
-  final FileContent fileContent;
-  final List<String> imports;
-  final String content;
-
-  LibraryResolver({
-    required this.fileContent,
-    required this.imports,
-    required this.content,
-  });
-}
-
-class FunctionUnwrap extends Generator {
   TypeChecker get typeChecker => TypeChecker.fromRuntime(UnWrap);
 
   final List<FunctionItem> items = [];
   // FileContent fileContent;
   // List<LibraryResolver> libResolvers = [];
-  late BuildStep buildStep;
   bool _completed = true;
-  bool? isCompleted(BuildStep buildStep) {
-    try {
-      buildStep.resolver;
-    } catch (e) {
-      if (e is BuildStepCompletedException) {
-        return true;
-      }
-      return null;
-    }
-  }
+  final LibraryReader library;
+  final BuildStep buildStep;
 
-  @override
-  FutureOr<String?> generate(LibraryReader library, BuildStep buildStep) async {
+  LibraryResolver({
+    required this.library,
+    required this.buildStep,
+  });
+
+  resolve() async {
     items.clear();
-    if (!_completed) {
-      print(
-          "Heyyy! attempt to reassign the buildStep while it is not completed");
-      print("And this new build step is ${isCompleted(buildStep)} "
-          "while the current build step is ${isCompleted(this.buildStep)}");
-      return null;
-    }
+    // if (!_completed) {
+    //   print(
+    //       "Heyyy! attempt to reassign the buildStep while it is not completed");
+    //   print("And this new build step is ${isCompleted(buildStep)} "
+    //       "while the current build step is ${isCompleted(this.buildStep)}");
+    //   return null;
+    // }
     _completed = false;
-    this.buildStep = buildStep;
     final inputId = buildStep.inputId;
     print("Unwrapping new file. Function Cache cleared. ${inputId.uri.path}");
     final fileContent = await resolveLib(library.element, inputId);
@@ -106,6 +88,10 @@ class FunctionUnwrap extends Generator {
       LibraryElement element, AssetId inputId) async {
     print("Resolving  lib. ${inputId.uri.path}");
 
+    /// we are taking this content early because buildStep may expire,
+    /// we don't want to return null because the generated file wil lbe deleted
+    final content = await readAsString(inputId);
+
     final externalLib = element.importedLibraries
         .where((element) => element.identifier.endsWith(".source.util.dart"));
     final imports = element.importedLibraries.map((e) => e.identifier).toList();
@@ -120,7 +106,6 @@ class FunctionUnwrap extends Generator {
     }
     // libResolvers.add(LibraryResolver(element.identifier));
 
-    final content = await readAsString(inputId);
     if (content == null) return null;
     final fileContent = FileContent(content, 0, element.identifier, imports);
     final library = LibraryReader(element);
@@ -140,8 +125,9 @@ class FunctionUnwrap extends Generator {
 
     var i = 0;
     for (var element in library.allElements) {
+      i++;
       var astNode = await resolver()?.astNodeFor(element, resolve: true);
-      // print("${element.runtimeType} ${i++} runtimeType ${element.toString()}}");
+      // print("${element.runtimeType} $i runtimeType ${element.toString()}}");
       if (astNode != null) {
         resolveFunction(astNode, fileContent);
       }
@@ -346,5 +332,32 @@ class FunctionUnwrap extends Generator {
 
   List<FunctionItem> getFunctionItemByMethodName(String funcName) {
     return items.where((element) => element.methodName == funcName).toList();
+  }
+}
+
+class FunctionUnwrap extends Generator {
+  bool? isCompleted(BuildStep buildStep) {
+    try {
+      buildStep.resolver;
+    } catch (e) {
+      if (e is BuildStepCompletedException) {
+        return true;
+      }
+      return null;
+    }
+    return false;
+  }
+
+  late LibraryResolver latest;
+
+  @override
+  FutureOr<String?> generate(LibraryReader library, BuildStep buildStep) async {
+    final libResolver = LibraryResolver(
+      library: library,
+      buildStep: buildStep,
+    );
+    // this.latest = libResolver;
+    final ans = await libResolver.resolve();
+    return ans;
   }
 }
