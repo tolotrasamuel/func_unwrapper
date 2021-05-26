@@ -32,14 +32,26 @@ class FunctionUnwrap extends Generator {
   // FileContent fileContent;
   // List<LibraryResolver> libResolvers = [];
   late BuildStep buildStep;
+  bool _completed = true;
   @override
-  FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
+  FutureOr<String?> generate(LibraryReader library, BuildStep buildStep) async {
     items.clear();
+    if (!_completed) {
+      print(
+          "Heyyy! attempt to reassign the buildStep while it is not completed");
+      return null;
+    }
+    _completed = false;
     this.buildStep = buildStep;
     final inputId = buildStep.inputId;
     print("Unwrapping new file. Function Cache cleared. ${inputId.uri.path}");
-    final ans = await resolveLib(library.element, inputId);
-    final imports = ans.imports.toSet().toList().map((e) {
+    final fileContent = await resolveLib(library.element, inputId);
+    if (fileContent == null) {
+      _completed = true;
+      return null;
+    }
+    ;
+    final imports = fileContent.imports.toSet().toList().map((e) {
       var newPath = e;
       if (e.contains("asset:")) {
         final currentPath = (inputId.uri.path);
@@ -48,10 +60,36 @@ class FunctionUnwrap extends Generator {
       }
       return "import '$newPath';";
     });
-    return "${imports.join("\n")}\n${ans.content}";
+    _completed = true;
+    return "${imports.join("\n")}\n${fileContent.content}";
   }
 
-  Future<FileContent> resolveLib(
+  /// Somehow, when running in watch mode, this error happens suddenly
+  /// while looping through the allElements (Something completes the buildStep
+  /// before we finish returning a string value)
+  /// It could because the file has changed (we are editing it while building)
+  Resolver? resolver() {
+    try {
+      return this.buildStep.resolver;
+    } catch (e, trace) {
+      print('Possible BuildStepCompletedException $e');
+      print(trace);
+      return null;
+    }
+  }
+
+  /// Same comment as [resolver]
+  Future<String?> readAsString(AssetId inputId) async {
+    try {
+      await buildStep.readAsString(inputId);
+    } catch (e, trace) {
+      print('Possible BuildStepCompletedException $e');
+      print(trace);
+      return null;
+    }
+  }
+
+  Future<FileContent?> resolveLib(
       LibraryElement element, AssetId inputId) async {
     print("Resolving  lib. ${inputId.uri.path}");
 
@@ -60,17 +98,19 @@ class FunctionUnwrap extends Generator {
     final imports = element.importedLibraries.map((e) => e.identifier).toList();
     if (externalLib.isNotEmpty) {
       for (var libElment in externalLib) {
-        final assetId = await buildStep.resolver.assetIdForElement(libElment);
+        final assetId = await resolver()?.assetIdForElement(libElment);
+        if (assetId == null) continue;
         final fileContent = await resolveLib(libElment, assetId);
+        if (fileContent == null) continue;
         imports.addAll(fileContent.imports);
       }
     }
     // libResolvers.add(LibraryResolver(element.identifier));
 
-    String content = await buildStep.readAsString(inputId);
-    FileContent fileContent =
-        FileContent(content, 0, element.identifier, imports);
-    LibraryReader library = LibraryReader(element);
+    final content = await readAsString(inputId);
+    if (content == null) return null;
+    final fileContent = FileContent(content, 0, element.identifier, imports);
+    final library = LibraryReader(element);
 
     final annotations = library.annotatedWith(typeChecker).toList();
 
@@ -78,7 +118,7 @@ class FunctionUnwrap extends Generator {
       // print("All topLevel functions in ${fileContent.fileName} "
       //     "${element.runtimeType}  ${element.toString()}}");
       var astNode =
-          await buildStep.resolver.astNodeFor(element.element, resolve: true);
+          await resolver()?.astNodeFor(element.element, resolve: true);
       if (astNode != null) {
         buildFunctions(astNode, fileContent);
       }
@@ -87,7 +127,7 @@ class FunctionUnwrap extends Generator {
 
     var i = 0;
     for (var element in library.allElements) {
-      var astNode = await buildStep.resolver.astNodeFor(element, resolve: true);
+      var astNode = await resolver()?.astNodeFor(element, resolve: true);
       // print("${element.runtimeType} ${i++} runtimeType ${element.toString()}}");
       if (astNode != null) {
         resolveFunction(astNode, fileContent);
@@ -129,7 +169,7 @@ class FunctionUnwrap extends Generator {
 
       // final copySelector = existing.first.selector;
       final argumentList = getArgFromMethodInvocation(methodInvocation);
-      String replacement = "";
+      var replacement = "";
       try {
         // this may fail due to range error caused by using build_runner watch and utils has changed
         replacement = invokedMethod.toStringCalledWith(argumentList);
@@ -292,9 +332,6 @@ class FunctionUnwrap extends Generator {
   }
 
   List<FunctionItem> getFunctionItemByMethodName(String funcName) {
-    return this
-        .items
-        .where((element) => element.methodName == funcName)
-        .toList();
+    return items.where((element) => element.methodName == funcName).toList();
   }
 }
