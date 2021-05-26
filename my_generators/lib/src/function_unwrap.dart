@@ -185,7 +185,7 @@ class FunctionUnwrap extends Generator {
     var methodName = getFuncNameFromFuncDeclaration(funcDeclaration);
     final existing = getFunctionItemByMethodName(methodName);
     if (existing.isNotEmpty) {
-      throw ("Warning, method $methodName already declared at both: "
+      print("Warning, method $methodName already declared at both: "
           "${existing.first.file.fileName} and ${fileContent.fileName}. \n");
       return;
     }
