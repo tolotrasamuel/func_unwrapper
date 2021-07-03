@@ -119,6 +119,9 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
     final typeToMock = classType.toTypeValue();
     final element = typeToMock?.element;
     if (element == null) return null;
+    final library = element.library;
+    if (library == null) return null;
+    if (library.location.toString().startsWith("dart")) return null;
     final astNode = await buildStep.resolver.astNodeFor(element, resolve: true);
     if (astNode == null) return null;
     if (astNode is! ClassDeclaration) return null;
