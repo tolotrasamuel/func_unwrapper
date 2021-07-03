@@ -119,9 +119,14 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
     final typeToMock = classType.toTypeValue();
     final element = typeToMock?.element;
     if (element == null) return null;
+    // I am not sure why but when I run in the app
+    // Dart Stream controller abstract class seems to reach until here
+    // So filtering it out
     final library = element.library;
     if (library == null) return null;
     if (library.location.toString().startsWith("dart")) return null;
+    // End comment
+
     final astNode = await buildStep.resolver.astNodeFor(element, resolve: true);
     if (astNode == null) return null;
     if (astNode is! ClassDeclaration) return null;
