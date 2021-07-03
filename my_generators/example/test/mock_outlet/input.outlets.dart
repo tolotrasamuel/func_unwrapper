@@ -10,6 +10,9 @@ import 'package:mockito/mockito.dart';
 import 'input.mocks.dart';
 
 import 'input.dart';
+import 'package:example_usage/model.dart';
+import 'package:mockito/annotations.dart';
+import 'dart:core';
 
 class MockOutlet {
   final OutletSomeService outletSomeService = OutletSomeService();
@@ -18,7 +21,7 @@ class MockOutlet {
 
 class OutletSomeService {
   final Completer<int> bar = Completer();
-  final Completer<int> foo = Completer();
+  final Completer<Dog> foo = Completer();
   final MockSomeService mock =
       GetIt.instance.get<SomeService>() as MockSomeService;
 

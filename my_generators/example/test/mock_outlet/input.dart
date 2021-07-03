@@ -12,8 +12,8 @@ class SomeService {
     return Future.delayed(Duration(seconds: 3));
   }
 
-  Future<int> foo(String foune, [bool clean = true]) async {
-    return await Future.value(3);
+  Future<Dog> foo(String foune, [bool clean = true]) async {
+    return await Future.value(Dog(Cat()));
   }
 
   // Private should be ignored
@@ -33,6 +33,10 @@ class SomeController {
   }
 
   Future<int> foo() async {
+    return await Future.value(3);
+  }
+
+  static Future<int> fooStatic() async {
     return await Future.value(3);
   }
 

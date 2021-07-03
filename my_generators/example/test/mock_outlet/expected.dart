@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:example_usage/model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mockito/mockito.dart';
 
@@ -13,7 +14,7 @@ class MockOutlet {
 
 class OutletSomeService {
   final Completer<int> bar = Completer();
-  final Completer<int> foo = Completer();
+  final Completer<Dog> foo = Completer();
 
   final MockSomeService mock =
       GetIt.instance.get<SomeService>() as MockSomeService;
@@ -40,9 +41,9 @@ class OutletSomeController {
   OutletSomeController() {
     when(mock.bar(
       any,
-      glass: anyNamed("glass"),
-      test: anyNamed("test"),
-      zero: anyNamed("zero"),
+      glass: anyNamed('glass'),
+      test: anyNamed('test'),
+      zero: anyNamed('zero'),
     )).thenAnswer((_) async => bar.future);
     when(mock.foo()).thenAnswer((_) async => foo.future);
     when(mock.baz()).thenReturn(baz.stream);

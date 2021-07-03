@@ -131,8 +131,12 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
     if (astNode == null) return null;
     if (astNode is! ClassDeclaration) return null;
 
-    final methodDeclarations =
-        astNode.childEntities.whereType<MethodDeclaration>().toList();
+    final methodDeclarations = astNode.childEntities
+        .whereType<MethodDeclaration>()
+        .where(
+          (element) => !element.isStatic,
+        )
+        .toList();
     for (final element in methodDeclarations) {
       final methodName = element.name.toString();
       if (Identifier.isPrivateName(methodName)) continue;
@@ -157,8 +161,11 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
     final str = outletsToString(className, outlets);
     final classLocation = element.library?.location.toString();
     if (classLocation == null) return null; // impossible to return but well...
+    final imports =
+        element.library?.importedLibraries.map((e) => e.identifier).toList();
+
     return ClassOutLetResult(
-      imports: [classLocation],
+      imports: [classLocation, ...(imports ?? [])],
       content: str,
       className: className,
     );

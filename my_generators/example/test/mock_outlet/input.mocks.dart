@@ -2,12 +2,12 @@
 // in example_usage/test/mock_outlet/input.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
-import 'package:example_usage/model.dart' as _i4;
+import 'package:example_usage/model.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
-import 'input.dart' as _i2;
+import 'input.dart' as _i3;
 
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: comment_references
@@ -15,43 +15,46 @@ import 'input.dart' as _i2;
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: unnecessary_parenthesis
 
+class _FakeDog extends _i1.Fake implements _i2.Dog {}
+
 /// A class which mocks [SomeService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSomeService extends _i1.Mock implements _i2.SomeService {
+class MockSomeService extends _i1.Mock implements _i3.SomeService {
   MockSomeService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<int> bar(_i4.Cat? man) =>
+  _i4.Future<int> bar(_i2.Cat? man) =>
       (super.noSuchMethod(Invocation.method(#bar, [man]),
-          returnValue: Future<int>.value(0)) as _i3.Future<int>);
+          returnValue: Future<int>.value(0)) as _i4.Future<int>);
   @override
-  _i3.Future<int> foo(String? foune, [bool? clean = true]) =>
+  _i4.Future<_i2.Dog> foo(String? foune, [bool? clean = true]) =>
       (super.noSuchMethod(Invocation.method(#foo, [foune, clean]),
-          returnValue: Future<int>.value(0)) as _i3.Future<int>);
+              returnValue: Future<_i2.Dog>.value(_FakeDog()))
+          as _i4.Future<_i2.Dog>);
 }
 
 /// A class which mocks [SomeController].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSomeController extends _i1.Mock implements _i2.SomeController {
+class MockSomeController extends _i1.Mock implements _i3.SomeController {
   MockSomeController() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<int> bar(String? key,
-          {String? glass = r'water', _i4.Dog? test, String? zero}) =>
+  _i4.Future<int> bar(String? key,
+          {String? glass = r'water', _i2.Dog? test, String? zero}) =>
       (super.noSuchMethod(
           Invocation.method(
               #bar, [key], {#glass: glass, #test: test, #zero: zero}),
-          returnValue: Future<int>.value(0)) as _i3.Future<int>);
+          returnValue: Future<int>.value(0)) as _i4.Future<int>);
   @override
-  _i3.Future<int> foo() => (super.noSuchMethod(Invocation.method(#foo, []),
-      returnValue: Future<int>.value(0)) as _i3.Future<int>);
+  _i4.Future<int> foo() => (super.noSuchMethod(Invocation.method(#foo, []),
+      returnValue: Future<int>.value(0)) as _i4.Future<int>);
   @override
-  _i3.Stream<int> baz() => (super.noSuchMethod(Invocation.method(#baz, []),
-      returnValue: Stream<int>.empty()) as _i3.Stream<int>);
+  _i4.Stream<int> baz() => (super.noSuchMethod(Invocation.method(#baz, []),
+      returnValue: Stream<int>.empty()) as _i4.Stream<int>);
 }
