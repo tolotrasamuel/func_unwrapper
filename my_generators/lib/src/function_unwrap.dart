@@ -8,7 +8,7 @@ import 'package:my_generators/annotations.dart';
 import 'package:my_generators/src/model/file_content.dart';
 import 'package:my_generators/src/model/function_item.dart';
 import 'package:my_generators/src/model/selector.dart';
-import 'package:path/path.dart';
+import 'package:my_generators/src/utils/utils.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'utils/extensions.dart';
@@ -46,15 +46,13 @@ class LibraryResolver {
       _completed = true;
       return null;
     }
-    final imports = fileContent.imports.toSet().toList().map((e) {
-      var newPath = e;
-      if (e.contains("asset:")) {
-        final currentPath = (inputId.uri.path);
-        final package = e.replaceFirst("asset:", "");
-        newPath = relative(package, from: currentPath).replaceFirst('../', '');
-      }
-      return "import '$newPath';";
-    });
+    final imports = fileContent.imports.toSet().toList().map((locationItem) {
+      final currentPath = (inputId.uri.path);
+      return locationToImport(
+        locationItem: locationItem,
+        currentPath: currentPath,
+      );
+    }).whereType<String>();
     _completed = true;
     return "${imports.join("\n")}\n${fileContent.content}";
   }

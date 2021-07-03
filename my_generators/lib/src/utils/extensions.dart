@@ -16,3 +16,7 @@ String camelToSentence(String text) {
     return m1.toUpperCase();
   });
 }
+
+String upperCamelToLowerCal(String text) {
+  return text[0].toLowerCase() + text.substring(1);
+}

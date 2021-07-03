@@ -6,10 +6,19 @@ builders:
     build_extensions: {".source.dart": [".unwrapped_test.dart"]}
     build_to: source
     applies_builders: ["source_gen"]
+
   infoGeneratorBuilder:
     import: 'package:my_generators/my_generators.dart'
     builder_factories: ['infoGeneratorBuilder']
     auto_apply: dependents
     build_extensions: {".dart": [".info.dart"]}
+    build_to: source
+    applies_builders: ["source_gen"]
+
+  mockOutletGenerator:
+    import: 'package:my_generators/my_generators.dart'
+    builder_factories: ['mockOutletGenerator']
+    auto_apply: dependents
+    build_extensions: {".dart": [".outlets.dart"]}
     build_to: source
     applies_builders: ["source_gen"]

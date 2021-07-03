@@ -16,7 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:my_generators/annotations.dart';
 
-// ssss
+// sssss
 MockCat? cat;
 late Dog dog;
 @UnWrap()
