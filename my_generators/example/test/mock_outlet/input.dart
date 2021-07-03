@@ -1,7 +1,7 @@
 import 'package:example_usage/model.dart';
 import 'package:mockito/annotations.dart';
 
-/// s
+/// ss
 class SomeAnnotation {
   const SomeAnnotation();
 }
@@ -14,6 +14,10 @@ class SomeService {
 
   Future<Dog> foo(String foune, [bool clean = true]) async {
     return await Future.value(Dog(Cat()));
+  }
+
+  Future<T> runTransaction<T>() async {
+    return Future.value();
   }
 
   // Private should be ignored

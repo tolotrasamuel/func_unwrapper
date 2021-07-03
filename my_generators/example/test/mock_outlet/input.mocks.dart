@@ -34,6 +34,10 @@ class MockSomeService extends _i1.Mock implements _i3.SomeService {
       (super.noSuchMethod(Invocation.method(#foo, [foune, clean]),
               returnValue: Future<_i2.Dog>.value(_FakeDog()))
           as _i4.Future<_i2.Dog>);
+  @override
+  _i4.Future<T> runTransaction<T>() =>
+      (super.noSuchMethod(Invocation.method(#runTransaction, []),
+          returnValue: Future<T>.value(null)) as _i4.Future<T>);
 }
 
 /// A class which mocks [SomeController].

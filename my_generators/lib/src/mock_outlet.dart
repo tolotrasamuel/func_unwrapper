@@ -147,6 +147,19 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
       final parameterList =
           children.whereType<FormalParameterList>().firstOrNull;
       if (parameterList == null) continue;
+
+      /// Edge case where we have generic return type based on argument
+      /// I could not find a way to identify Generic return type
+      /// So I just assumed that all generic parameters are a single letter
+      /// 3 including < and > (ei: <T>
+      final typeArgumentList =
+          typeNameAst.childEntities.whereType<TypeArgumentList>().firstOrNull;
+      if (typeArgumentList != null && typeArgumentList.toString().length == 3) {
+        continue;
+      }
+
+      /// End edge case
+
       final outlet = Outlet(
         typeNameAst: typeNameAst,
         methodName: methodName,
