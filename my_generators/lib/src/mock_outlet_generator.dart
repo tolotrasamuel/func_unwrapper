@@ -45,72 +45,6 @@ class Outlet {
 }
 
 class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
-  @override
-  FutureOr<String?> generateForAnnotatedElement(
-    Element element,
-    ConstantReader annotation,
-    BuildStep buildStep,
-  ) async {
-    final buffer = StringBuffer();
-
-    final read = annotation.read('classes');
-    final classes = read.objectValue.toListValue();
-    if (classes == null) return null;
-    final classResults = <ClassOutLetResult>[];
-    for (final classType in classes) {
-      final result = await resolveClass(classType, buildStep);
-      if (result == null) continue;
-      classResults.add(result);
-      // buffer.writeln(str);
-    }
-    final library = element.library;
-    if (classResults.isEmpty || library == null) return null;
-    final currentLocation = library.location.toString();
-    final mockLocation = currentLocation.replaceFirst(".dart", ".mocks.dart");
-    final currentPath = buildStep.inputId.uri.path;
-    final outletLocation = currentPath.replaceFirst(".dart", ".outlets.dart");
-
-    /// Writing library dependency imports
-    buffer.writeln("""
-      import 'dart:async';
-      import 'package:get_it/get_it.dart';
-      import 'package:mockito/mockito.dart';
-      ${locationToImport(locationItem: mockLocation, currentPath: currentPath)}
-    """);
-
-    /// Writing imports to buffer
-    final imports = [];
-    classResults.forEach((element) {
-      imports.addAll(element.imports);
-    });
-    imports.toSet().forEach((importPath) {
-      final str = locationToImport(
-        locationItem: importPath,
-        currentPath: outletLocation,
-      );
-      if (str == null) return;
-      buffer.writeln(str);
-    });
-
-    /// Writing wrapper outlet
-    buffer.writeln('class Outlets {');
-    for (final classOutletResult in classResults) {
-      final classOutletName =
-          classNameToOutletName(classOutletResult.className);
-      final instanceName = upperCamelToLowerCal(classOutletResult.className);
-      buffer.writeln(
-        'final $classOutletName $instanceName = $classOutletName();',
-      );
-    }
-    buffer.writeln('}');
-
-    /// Writing class content to buffer
-    classResults.forEach((element) {
-      buffer.writeln(element.content);
-    });
-    return buffer.toString();
-  }
-
   Future<ClassOutLetResult?> resolveClass(
     DartObject classType,
     BuildStep buildStep,
@@ -240,21 +174,88 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
       }
       final methodName = outlet.methodName;
       final nothing = '';
+      final comma = ',';
       buffer.writeln("""
           when(mock.${outlet.methodName}(
-            ${inlineParameters.map((e) => "any").join(",")}
-            ${inlineParameters.isNotEmpty ? "," : nothing}
-            ${namedParameters.map((e) => "${e.identifier}: anyNamed('${e.identifier}')").join(",")}
-            ${namedParameters.isNotEmpty ? "," : nothing}
+            ${inlineParameters.map((e) => "any").join(comma)}
+            ${inlineParameters.isNotEmpty ? comma : nothing}
+            ${namedParameters.map((e) => "${e.identifier}: anyNamed('${e.identifier}')").join(comma)}
+            ${namedParameters.isNotEmpty ? comma : nothing}
           )).
             ${outlet.isFuture ? "thenAnswer((_) async => $methodName.future);" : nothing}
-            ${outlet.isStream ? "thenReturn($methodName.stream);" : nothing}
+            ${outlet.isStream ? "thenAnswer((_) => $methodName.stream);" : nothing}
           """);
     }
     buffer.writeln('}');
 
     buffer.writeln('}');
 
+    return buffer.toString();
+  }
+
+  @override
+  FutureOr<String?> generateForAnnotatedElement(
+    Element element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) async {
+    final buffer = StringBuffer();
+
+    final read = annotation.read('classes');
+    final classes = read.objectValue.toListValue();
+    if (classes == null) return null;
+    final classResults = <ClassOutLetResult>[];
+    for (final classType in classes) {
+      final result = await resolveClass(classType, buildStep);
+      if (result == null) continue;
+      classResults.add(result);
+      // buffer.writeln(str);
+    }
+    final library = element.library;
+    if (classResults.isEmpty || library == null) return null;
+    final currentLocation = library.location.toString();
+    final mockLocation = currentLocation.replaceFirst(".dart", ".mocks.dart");
+    final currentPath = buildStep.inputId.uri.path;
+    final outletLocation = currentPath.replaceFirst(".dart", ".outlets.dart");
+
+    /// Writing library dependency imports
+    buffer.writeln("""
+      import 'dart:async';
+      import 'package:get_it/get_it.dart';
+      import 'package:mockito/mockito.dart';
+      ${locationToImport(locationItem: mockLocation, currentPath: currentPath)}
+    """);
+
+    /// Writing imports to buffer
+    final imports = [];
+    classResults.forEach((element) {
+      imports.addAll(element.imports);
+    });
+    imports.toSet().forEach((importPath) {
+      final str = locationToImport(
+        locationItem: importPath,
+        currentPath: outletLocation,
+      );
+      if (str == null) return;
+      buffer.writeln(str);
+    });
+
+    /// Writing wrapper outlet
+    buffer.writeln('class Outlets {');
+    for (final classOutletResult in classResults) {
+      final classOutletName =
+          classNameToOutletName(classOutletResult.className);
+      final instanceName = upperCamelToLowerCal(classOutletResult.className);
+      buffer.writeln(
+        'final $classOutletName $instanceName = $classOutletName();',
+      );
+    }
+    buffer.writeln('}');
+
+    /// Writing class content to buffer
+    classResults.forEach((element) {
+      buffer.writeln(element.content);
+    });
     return buffer.toString();
   }
 }

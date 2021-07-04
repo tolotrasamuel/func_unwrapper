@@ -54,6 +54,6 @@ class OutletSomeController {
 
     when(mock.foo()).thenAnswer((_) async => foo.future);
 
-    when(mock.baz()).thenReturn(baz.stream);
+    when(mock.baz()).thenAnswer((_) => baz.stream);
   }
 }
