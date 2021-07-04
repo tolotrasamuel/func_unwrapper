@@ -132,16 +132,14 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
     for (final outlet in outlets) {
       switch (outlet.type) {
         case OutletType.future:
+          buffer.write("final ${outlet.methodName} = ");
           buffer.write(
-              "${outlet.typeNameAst.toString().replaceFirst("Future", "final Completer")} ");
-          buffer.write("${outlet.methodName} ");
-          buffer.write(" = Completer();");
+              "${outlet.typeNameAst.toString().replaceFirst("Future", "Completer")}();");
           break;
         case OutletType.stream:
+          buffer.write("final ${outlet.methodName} = ");
           buffer.write(
-              "${outlet.typeNameAst.toString().replaceFirst("Stream", "final StreamController")} ");
-          buffer.write("${outlet.methodName} ");
-          buffer.write(" = StreamController.broadcast();");
+              "${outlet.typeNameAst.toString().replaceFirst("Stream", "StreamController")}.broadcast();");
           break;
       }
     }
@@ -150,8 +148,7 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
 
     /// Initiating the mock instances
     buffer.writeln('''
-        final $mockClassName mock =
-          GetIt.instance.get<$className>() as $mockClassName;
+        final mock = GetIt.instance.get<$className>() as $mockClassName;
     ''');
 
     buffer.writeln();
@@ -247,7 +244,7 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
           classNameToOutletName(classOutletResult.className);
       final instanceName = upperCamelToLowerCal(classOutletResult.className);
       buffer.writeln(
-        'final $classOutletName $instanceName = $classOutletName();',
+        'final $instanceName = $classOutletName();',
       );
     }
     buffer.writeln('}');

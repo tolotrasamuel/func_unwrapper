@@ -15,15 +15,14 @@ import 'package:mockito/annotations.dart';
 import 'dart:core';
 
 class Outlets {
-  final OutletSomeService someService = OutletSomeService();
-  final OutletSomeController someController = OutletSomeController();
+  final someService = OutletSomeService();
+  final someController = OutletSomeController();
 }
 
 class OutletSomeService {
-  final Completer<int> bar = Completer();
-  final Completer<Dog> foo = Completer();
-  final MockSomeService mock =
-      GetIt.instance.get<SomeService>() as MockSomeService;
+  final bar = Completer<int>();
+  final foo = Completer<Dog>();
+  final mock = GetIt.instance.get<SomeService>() as MockSomeService;
 
   OutletSomeService() {
     when(mock.bar(
@@ -38,11 +37,10 @@ class OutletSomeService {
 }
 
 class OutletSomeController {
-  final Completer<int> bar = Completer();
-  final Completer<int> foo = Completer();
-  final StreamController<int> baz = StreamController.broadcast();
-  final MockSomeController mock =
-      GetIt.instance.get<SomeController>() as MockSomeController;
+  final bar = Completer<int>();
+  final foo = Completer<int>();
+  final baz = StreamController<int>.broadcast();
+  final mock = GetIt.instance.get<SomeController>() as MockSomeController;
 
   OutletSomeController() {
     when(mock.bar(
