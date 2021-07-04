@@ -93,11 +93,11 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
     });
 
     /// Writing wrapper outlet
-    buffer.writeln('class MockOutlet {');
+    buffer.writeln('class Outlets {');
     for (final classOutletResult in classResults) {
       final classOutletName =
           classNameToOutletName(classOutletResult.className);
-      final instanceName = upperCamelToLowerCal(classOutletName);
+      final instanceName = upperCamelToLowerCal(classOutletResult.className);
       buffer.writeln(
         'final $classOutletName $instanceName = $classOutletName();',
       );

@@ -5,17 +5,18 @@
 // **************************************************************************
 
 import 'dart:async';
-
-import 'package:example_usage/model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mockito/mockito.dart';
-
-import 'input.dart';
 import 'input.mocks.dart';
 
-class MockOutlet {
-  final OutletSomeService outletSomeService = OutletSomeService();
-  final OutletSomeController outletSomeController = OutletSomeController();
+import 'input.dart';
+import 'package:example_usage/model.dart';
+import 'package:mockito/annotations.dart';
+import 'dart:core';
+
+class Outlets {
+  final OutletSomeService someService = OutletSomeService();
+  final OutletSomeController someController = OutletSomeController();
 }
 
 class OutletSomeService {
@@ -50,7 +51,9 @@ class OutletSomeController {
       test: anyNamed('test'),
       zero: anyNamed('zero'),
     )).thenAnswer((_) async => bar.future);
+
     when(mock.foo()).thenAnswer((_) async => foo.future);
+
     when(mock.baz()).thenReturn(baz.stream);
   }
 }

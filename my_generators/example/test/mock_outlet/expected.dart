@@ -7,9 +7,9 @@ import 'package:mockito/mockito.dart';
 import 'input.dart';
 import 'input.mocks.dart';
 
-class MockOutlet {
-  final OutletSomeService outletSomeService = OutletSomeService();
-  final OutletSomeController outletSomeController = OutletSomeController();
+class Outlets {
+  final OutletSomeService someService = OutletSomeService();
+  final OutletSomeController someController = OutletSomeController();
 }
 
 class OutletSomeService {
