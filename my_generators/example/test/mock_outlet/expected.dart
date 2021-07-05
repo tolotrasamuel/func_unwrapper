@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:example_usage/model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mockito/mockito.dart';
+import 'package:my_generators/models.dart';
 
 import 'input.dart';
 import 'input.mocks.dart';
@@ -10,12 +11,23 @@ import 'input.mocks.dart';
 class Outlets {
   final someService = OutletSomeService();
   final someController = OutletSomeController();
+
+  List<BaseOutlet> get all => [
+        someService,
+        someController,
+      ];
+  void resetMocks() {
+    all.forEach((outlet) {
+      reset(outlet.mock);
+    });
+  }
 }
 
-class OutletSomeService {
+class OutletSomeService extends BaseOutlet {
   final bar = Completer<int>();
   final foo = Completer<Dog>();
-  final mock = GetIt.instance.get<SomeService>() as MockSomeService;
+  final MockSomeService mock =
+      GetIt.instance.get<SomeService>() as MockSomeService;
 
   OutletSomeService() {
     when(mock.bar(
@@ -28,11 +40,12 @@ class OutletSomeService {
   }
 }
 
-class OutletSomeController {
+class OutletSomeController extends BaseOutlet {
   final bar = Completer<int>();
   final foo = Completer<int>();
   final baz = StreamController<int>.broadcast();
-  final mock = GetIt.instance.get<SomeController>() as MockSomeController;
+  final MockSomeController mock =
+      GetIt.instance.get<SomeController>() as MockSomeController;
 
   OutletSomeController() {
     when(mock.bar(

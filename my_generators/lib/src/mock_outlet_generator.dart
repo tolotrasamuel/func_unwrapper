@@ -126,7 +126,7 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
     final buffer = StringBuffer();
     final outletClassName = classNameToOutletName(className);
     final mockClassName = "Mock$className";
-    buffer.writeln('class $outletClassName {');
+    buffer.writeln('class $outletClassName extends BaseOutlet {');
 
     /// Creating the outlets
     for (final outlet in outlets) {
@@ -148,7 +148,7 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
 
     /// Initiating the mock instances
     buffer.writeln('''
-        final mock = GetIt.instance.get<$className>() as $mockClassName;
+        final $mockClassName mock = GetIt.instance.get<$className>() as $mockClassName;
     ''');
 
     buffer.writeln();
@@ -220,6 +220,7 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
       import 'dart:async';
       import 'package:get_it/get_it.dart';
       import 'package:mockito/mockito.dart';
+      import 'package:my_generators/models.dart';
       ${locationToImport(locationItem: mockLocation, currentPath: currentPath)}
     """);
 
@@ -238,7 +239,9 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
     });
 
     /// Writing wrapper outlet
-    buffer.writeln('class Outlets {');
+    buffer.writeln('class Outlets {'); // class Outlets
+
+    // printing MockOutlets Fields
     for (final classOutletResult in classResults) {
       final classOutletName =
           classNameToOutletName(classOutletResult.className);
@@ -247,7 +250,25 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
         'final $instanceName = $classOutletName();',
       );
     }
-    buffer.writeln('}');
+    buffer.writeln('List<BaseOutlet> get all => ['); // List<BaseOutlet>
+
+    // printing All Mocks Fields
+    for (final classOutletResult in classResults) {
+      final instanceName = upperCamelToLowerCal(classOutletResult.className);
+      buffer.writeln(instanceName + ',');
+    }
+    buffer.writeln('];'); //  end List<BaseOutlet>
+
+    // Writing reset method
+    buffer.writeln('''
+      void resetMocks() {
+       all.forEach((outlet) {
+         reset(outlet.mock);
+       });
+      }
+     ''');
+
+    buffer.writeln('}'); // end class Outlets
 
     /// Writing class content to buffer
     classResults.forEach((element) {
