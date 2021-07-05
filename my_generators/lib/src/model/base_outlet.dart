@@ -7,14 +7,15 @@ abstract class BaseOutlet {
 }
 
 class StubFuture<T> {
-  late Completer<T> stub;
+  Completer<T> get stub => _stub!;
+  Completer<T>? _stub;
   late Function resetAction;
   void complete([FutureOr<T>? value]) {
     stub.complete(value);
   }
 
   void reset() {
-    stub = Completer();
+    _stub = Completer();
     resetAction();
   }
 
@@ -24,14 +25,15 @@ class StubFuture<T> {
 }
 
 class StubStream<T> {
-  late StreamController<T> stub;
+  StreamController<T> get stub => _stub!;
+  StreamController<T>? _stub;
   late Function resetAction;
   void add(T event) {
     stub.add(event);
   }
 
   void reset() {
-    stub = StreamController.broadcast();
+    _stub = StreamController.broadcast();
     resetAction();
   }
 
