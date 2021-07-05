@@ -134,12 +134,12 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
         case OutletType.future:
           buffer.write("final ${outlet.methodName} = ");
           buffer.write(
-              "${outlet.typeNameAst.toString().replaceFirst("Future", "Completer")}();");
+              "${outlet.typeNameAst.toString().replaceFirst("Future", "StubFuture")}();");
           break;
         case OutletType.stream:
           buffer.write("final ${outlet.methodName} = ");
           buffer.write(
-              "${outlet.typeNameAst.toString().replaceFirst("Stream", "StreamController")}.broadcast();");
+              "${outlet.typeNameAst.toString().replaceFirst("Stream", "StubStream")}();");
           break;
       }
     }
@@ -173,19 +173,35 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
       final nothing = '';
       final comma = ',';
       buffer.writeln("""
-          when(mock.${outlet.methodName}(
-            ${inlineParameters.map((e) => "any").join(comma)}
-            ${inlineParameters.isNotEmpty ? comma : nothing}
-            ${namedParameters.map((e) => "${e.identifier}: anyNamed('${e.identifier}')").join(comma)}
-            ${namedParameters.isNotEmpty ? comma : nothing}
-          )).
-            ${outlet.isFuture ? "thenAnswer((_) async => $methodName.future);" : nothing}
-            ${outlet.isStream ? "thenAnswer((_) => $methodName.stream);" : nothing}
+      
+       $methodName.setReset(() {
+            when(mock.${outlet.methodName}(
+                ${inlineParameters.map((e) => "any").join(comma)}
+                ${inlineParameters.isNotEmpty ? comma : nothing}
+                ${namedParameters.map((e) => "${e.identifier}: anyNamed('${e.identifier}')").join(comma)}
+                ${namedParameters.isNotEmpty ? comma : nothing}
+              )).
+                ${outlet.isFuture ? "thenAnswer((_) async => $methodName.stub.future);" : nothing}
+                ${outlet.isStream ? "thenAnswer((_) => $methodName.stub.stream);" : nothing}
+            }); 
+            
           """);
     }
-    buffer.writeln('}');
 
-    buffer.writeln('}');
+    /// Calling reset All method
+    buffer.writeln('''
+        resetAll();
+    ''');
+    buffer.writeln('}'); // end Constructor
+
+    // Declaring reset all Method
+    buffer.writeln('''
+        void resetAll() {
+          ${outlets.map((e) => e.methodName + '.reset();').join("\n")}
+        }
+    ''');
+
+    buffer.writeln('}'); // End class name
 
     return buffer.toString();
   }
