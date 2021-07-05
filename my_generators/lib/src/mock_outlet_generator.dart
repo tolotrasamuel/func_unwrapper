@@ -263,7 +263,7 @@ class MockOutletGenerator extends GeneratorForAnnotation<GenerateMocks> {
     buffer.writeln('''
       void resetMocks() {
        all.forEach((outlet) {
-         reset(outlet.mock);
+         clearInteractions(outlet.mock);
        });
       }
      ''');

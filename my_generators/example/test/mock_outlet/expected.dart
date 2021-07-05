@@ -18,7 +18,7 @@ class Outlets {
       ];
   void resetMocks() {
     all.forEach((outlet) {
-      reset(outlet.mock);
+      clearInteractions(outlet.mock);
     });
   }
 }
