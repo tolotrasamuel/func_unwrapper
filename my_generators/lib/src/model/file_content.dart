@@ -9,14 +9,14 @@ class FileContent {
   FileContent(this.content, this.offset, this.fileName, this.imports);
 
   void replaceAt({required Selector pasteAt, required String replacement}) {
-    this.content = this.content.replaceRange(
-          pasteAt.from,
-          pasteAt.to,
-          replacement,
-        );
+    content = content.replaceRange(
+      pasteAt.from,
+      pasteAt.to,
+      replacement,
+    );
     var offsetChange = replacement.length - pasteAt.length;
-    this.offset += offsetChange;
-    this.content;
+    offset += offsetChange;
+    content;
   }
 
   String resolveContent(Selector selector) {

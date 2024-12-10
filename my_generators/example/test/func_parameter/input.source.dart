@@ -1,8 +1,8 @@
 import 'package:example_usage/model.dart';
 import 'package:example_usage/model.mocks.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:my_generators/annotations.dart';
-import 'package:test/test.dart';
 
 // sss
 MockCat? cat;

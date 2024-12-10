@@ -6,9 +6,9 @@ class Selector {
 
   Selector(this.from, this.to);
 
-  int get length => this.to - this.from;
+  int get length => to - from;
   void addOffset(int offsetChange) {
-    this.from += offsetChange;
-    this.to += offsetChange;
+    from += offsetChange;
+    to += offsetChange;
   }
 }
